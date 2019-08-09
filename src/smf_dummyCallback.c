@@ -2,18 +2,20 @@
  * smf_dummyCallback.c
  *
  *  Created on: 2016/10/26
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
 
 #include "smf.h"
+
+#define SMF_PRINTF
 
 
 __attribute__((weak))
 int32_t smfCallbackNoteOff(uint8_t channel, uint8_t key, uint8_t velocity)
 {
 	UNUSED(channel); UNUSED(key); UNUSED(velocity);
-	int8_t *keyName = midiNoteName[key]; UNUSED(keyName);
+	const char *keyName = midiNoteName[key]; UNUSED(keyName);
 	SMF_PRINTF("NoteOFF ");
 	SMF_PRINTF("Ch %d, Key %s, Vel %d\n", channel, keyName, velocity);
 	return 0;
@@ -24,7 +26,7 @@ __attribute__((weak))
 int32_t smfCallbackNoteOn(uint8_t channel, uint8_t key, uint8_t velocity)
 {
 	UNUSED(channel); UNUSED(key); UNUSED(velocity);
-	int8_t *keyName = midiNoteName[key]; UNUSED(keyName);
+	const char *keyName = midiNoteName[key]; UNUSED(keyName);
 	SMF_PRINTF("NoteON ");
 	SMF_PRINTF("Ch %d, Key %s, Vel %d\n", channel, keyName, velocity);
 	return 0;

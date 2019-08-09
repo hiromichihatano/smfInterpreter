@@ -2,17 +2,32 @@
  * main.c
  *
  *  Created on: 2016/10/23
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "smf.h"
-
-
 
 #define BUFLEN (1024*128)	/* 128KB */
 
-#if 0
+
+void showBinary(uint8_t buf[], int32_t len)
+{
+	int32_t i;
+
+	for(i=0; i<len; i++){
+		if(i % 16 == 0){
+			printf("\n%08x: ", i);
+		}
+		printf("%02x ", buf[i]);
+	}
+	puts("");
+}
+
+
+
+
 int main(int argc, char *argv[])
 {
 	uint8_t smfBuf[BUFLEN];
@@ -58,4 +73,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-#endif

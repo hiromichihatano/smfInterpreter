@@ -2,7 +2,7 @@
  * smf_lib.c
  *
  *  Created on: 2016/10/24
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
 #include "smf.h"
@@ -23,7 +23,7 @@ const int32_t midiNoteFreq[] = {
     7040, 7459, 7902, 8372, 8870, 9397, 9956, 10548, 11175, 11840, 12544,
 };
 
-const int8_t midiNoteName[][5] = {
+const char midiNoteName[][5] = {
     "C -2", "C#-2", "D -2", "D#-2", "E -2", "F -2", "F#-2", "G -2", "G#-2",
     "A -1", "A#-1", "B -1", "C -1", "C#-1", "D -1", "D#-1", "E -1", "F -1", "F#-1", "G -1", "G#-1",
     "A  0", "A# 0", "B  0", "C  0", "C# 0", "D  0", "D# 0", "E  0", "F  0", "F# 0", "G  0", "G# 0",
@@ -38,36 +38,21 @@ const int8_t midiNoteName[][5] = {
 
 
 /**
- * ƒ}ƒCƒNƒ•b‚ğAƒ^ƒCƒ€ƒx[ƒX(I16Q16)’l‚É•ÏŠ·‚·‚éB
+ * ï¿½}ï¿½Cï¿½Nï¿½ï¿½ï¿½bï¿½ï¿½ï¿½Aï¿½^ï¿½Cï¿½ï¿½ï¿½xï¿½[ï¿½X(I24Q8)ï¿½lï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½ï¿½B
  *
- * @param timeUs  •ÏŠ·‚·‚éŠÔ(ƒ}ƒCƒNƒ•b)
- * @param timeDiv ŠÔ’PˆÊB‘S‰¹•„•Ó‚è‚Ìƒ^ƒCƒ€ƒx[ƒX”
- * @param tempo   ƒeƒ“ƒ|B‚S•ª‰¹•„•Ó‚è‚ÌŠÔ(us)‚ğ¦‚µ‚Ä‚¢‚é‚Ì‚Å’ˆÓB
- * @return •ÏŠ·‚µ‚½ƒ^ƒCƒ€ƒx[ƒX’lB
+ * @param timeUs  ï¿½ÏŠï¿½ï¿½ï¿½ï¿½éï¿½ï¿½(ï¿½}ï¿½Cï¿½Nï¿½ï¿½ï¿½b)
+ * @param timeDiv ï¿½ï¿½ï¿½Ô’Pï¿½ÊBï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½Ó‚ï¿½Ìƒ^ï¿½Cï¿½ï¿½ï¿½xï¿½[ï¿½Xï¿½ï¿½
+ * @param tempo   ï¿½eï¿½ï¿½ï¿½|ï¿½Bï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó‚ï¿½Ìï¿½ï¿½ï¿½(us)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Ì‚Å’ï¿½ï¿½ÓB
+ * @return ï¿½ÏŠï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½Cï¿½ï¿½ï¿½xï¿½[ï¿½Xï¿½lï¿½B
  */
 timebaseI24Q8_t smfLibUsToTimebase(int32_t timeUs, int32_t timeDiv, int32_t tempo)
 {
 
-	/** <ŠÔ(us)> * <‘S‰¹•„•Ó‚è‚Ìƒ^ƒCƒ€ƒx[ƒX”(tb)>  / <‘S‰¹•„‚ÌŠÔ(us)> */
+	/** <ï¿½ï¿½ï¿½ï¿½(us)> * <ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½Ó‚ï¿½Ìƒ^ï¿½Cï¿½ï¿½ï¿½xï¿½[ï¿½Xï¿½ï¿½(tb)>  / <ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½(us)> */
 	//return timeUs * timeDiv / (4 * tempo);
 	return (timeUs * timeDiv) / (tempo >> 8);
 }
 
-
-
-
-void showBinary(uint8_t buf[], int32_t len)
-{
-	int32_t i;
-
-	for(i=0; i<len; i++){
-		if(i % 16 == 0){
-			printf("\n%08x: ", i);
-		}
-		printf("%02x ", buf[i]);
-	}
-	puts("");
-}
 
 uint32_t smfLibGetSmfFixedLe7(const uint8_t smfBuf[], off_t off, len_t len)
 {
@@ -81,6 +66,7 @@ uint32_t smfLibGetSmfFixedLe7(const uint8_t smfBuf[], off_t off, len_t len)
 
 	return ret;
 }
+
 
 uint32_t smfLibGetSmfFixedBe8(const uint8_t smfBuf[], off_t off, len_t len)
 {
@@ -159,4 +145,3 @@ int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen
 	SMF_PRINTF("smfInterPreterInit done.\n");
 	return 0;
 }
-

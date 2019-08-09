@@ -1,12 +1,14 @@
-/*
+ï»¿/*
  * smf_lib.h
  *
  *  Created on: 2016/10/24
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
 #ifndef SMF_LIB_H_
 #define SMF_LIB_H_
+
+#include <stdint.h>
 
 //typedef int32_t size_t;
 typedef int32_t off_t;
@@ -21,11 +23,11 @@ typedef int32_t timebaseI24Q8_t;
 #endif
 
 typedef struct {
-	off_t bodyOffset;			/** MIDIƒf[ƒ^–{‘Ì‚ÌƒIƒtƒZƒbƒg */
-	len_t endOffset;			/** MIDI body ‚Ì’·‚³ */
-	off_t nextEventOffset;		/** Ÿ‚É“Ç‚ŞMIDIƒCƒxƒ“ƒg‚Ìæ“ª‚ğw‚· */
-	timebase_t nextEventTime;	/** Ÿ‚ÌƒCƒxƒ“ƒgŠÔ(ÏZŠÔ) */
-	uint8_t prevStateByte;		/** ‘O‚ÌƒCƒxƒ“ƒg‚Ì statusByte */
+	off_t bodyOffset;			/** MIDIãƒ‡ãƒ¼ã‚¿æœ¬ä½“ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
+	len_t endOffset;			/** MIDI body ã®é•·ã• */
+	off_t nextEventOffset;		/** æ¬¡ã«èª­ã‚€MIDIã‚¤ãƒ™ãƒ³ãƒˆã®å…ˆé ­ã‚’æŒ‡ã™ */
+	timebase_t nextEventTime;	/** æ¬¡ã®ã‚¤ãƒ™ãƒ³ãƒˆæ™‚é–“(ç©ç®—æ™‚é–“) */
+	uint8_t prevStateByte;		/** å‰ã®ã‚¤ãƒ™ãƒ³ãƒˆã® statusByte */
 
 } smfTrackInfo;
 
@@ -40,15 +42,14 @@ typedef struct {
 } smfInfo;
 
 extern const int32_t midiNoteFreq[];
-extern const int8_t midiNoteName[][5];
+extern const char midiNoteName[][5];
 
 
-timebaseI24Q8_t smfLibUsToTimebase(int32_t timeUs, int32_t timeDiv, int32_t tempo);
-uint32_t smfLibGetSmfFixedLe7(const uint8_t smfBuf[], off_t off, len_t len);
-uint32_t smfLibGetSmfFixedBe8(const uint8_t smfBuf[], off_t off, len_t len);
-len_t smfLibGetSmfVar(const uint8_t smfBuf[], off_t off, int32_t *value);
-void showBinary(uint8_t buf[], int32_t len);
-void smfLibRewindToStart(smfInfo *smfi);
-int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen);
+extern timebaseI24Q8_t smfLibUsToTimebase(int32_t timeUs, int32_t timeDiv, int32_t tempo);
+extern uint32_t smfLibGetSmfFixedLe7(const uint8_t smfBuf[], off_t off, len_t len);
+extern uint32_t smfLibGetSmfFixedBe8(const uint8_t smfBuf[], off_t off, len_t len);
+extern len_t smfLibGetSmfVar(const uint8_t smfBuf[], off_t off, int32_t *value);
+extern void smfLibRewindToStart(smfInfo *smfi);
+extern int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen);
 
 #endif /* SMF_LIB_H_ */

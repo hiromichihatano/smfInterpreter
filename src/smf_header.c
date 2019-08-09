@@ -2,10 +2,13 @@
  * smf_initHeader.c
  *
  *  Created on: 2016/10/24
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
 #include "smf.h"
+
+#define SMF_PRINTF
+#define SMF_EPRINTF
 
 static len_t _checkSmfHeaderChunkType(const uint8_t smfBuf[], off_t off)
 {

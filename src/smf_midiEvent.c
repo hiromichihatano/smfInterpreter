@@ -2,11 +2,13 @@
  * smf_midiEvent.c
  *
  *  Created on: 2016/10/26
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
-
 #include "smf.h"
+
+#define SMF_PRINTF
+#define SMF_EPRINTF
 
 static len_t _doEventNoteOff(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;

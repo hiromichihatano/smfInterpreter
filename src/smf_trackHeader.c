@@ -2,11 +2,14 @@
  * smf_trackHeader.c
  *
  *  Created on: 2016/10/26
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
 
 #include "smf.h"
+
+#define SMF_PRINTF
+#define SMF_EPRINTF
 
 static off_t _checkSmfTrackChunkType(const uint8_t smfBuf[], off_t off)
 {

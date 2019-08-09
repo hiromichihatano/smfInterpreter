@@ -1,8 +1,8 @@
-/*
+Ôªø/*
  * smf_midiEvent.h
  *
  *  Created on: 2016/10/26
- *      Author: hiro
+ *      Author: hiromichihatano
  */
 
 #ifndef SMF_MIDIEVENT_H_
@@ -26,13 +26,13 @@ typedef enum metaEventType {
 	metaEventTypeTrackEnd       = 0x2f,
 	metaEventTypeTempo          = 0x51,
 	metaEventTypeSmpteOffset    = 0x54,
-	metaEventTypeRhythm         = 0x58,		/* îèéq */
-	metaEventTypeKeySign        = 0x59,		/* í≤çÜ */
+	metaEventTypeRhythm         = 0x58,		/* ÊãçÂ≠ê */
+	metaEventTypeKeySign        = 0x59,		/* Ë™øÂè∑ */
 } enumMetaEventType;
 
 
 
-int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t time);
-int32_t smfMidiEventTimerTick(smfInfo *smfi, timebase_t time);
+extern int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t time);
+extern int32_t smfMidiEventTimerTick(smfInfo *smfi, timebase_t time);
 
 #endif /* SMF_MIDIEVENT_H_ */
