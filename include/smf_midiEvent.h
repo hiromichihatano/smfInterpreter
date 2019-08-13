@@ -1,4 +1,4 @@
-﻿/*
+/*
  * smf_midiEvent.h
  *
  *  Created on: 2016/10/26

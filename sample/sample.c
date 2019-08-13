@@ -12,6 +12,9 @@
 #define BUFLEN (1024*128)	/* 128KB */
 
 
+/**
+ * バイナリを 16bytes ずつオフセット付きで表示する
+ */
 void showBinary(uint8_t buf[], int32_t len)
 {
 	int32_t i;
@@ -24,7 +27,6 @@ void showBinary(uint8_t buf[], int32_t len)
 	}
 	puts("");
 }
-
 
 
 

@@ -55,23 +55,23 @@ off_t smfInterpreterTrackInit(smfTrackInfo *tracki, const uint8_t buf[], off_t b
 	size_t bodylen;
 	timebase_t nextEventTime;
 
-	/* MThd ‚ÌŠm”F */
+	/* MThd ã®ç¢ºèª */
 	len = _checkSmfTrackChunkType(buf, offset);
 	if (len < 0) goto ERROR;
 
-	/* ƒgƒ‰ƒbƒN’·‚Ìæ“¾ */
+	/* ãƒˆãƒ©ãƒƒã‚¯é•·ã®å–å¾— */
 	offset += len;
 	len = _getSmfTrackBodyLength(buf, offset, &bodylen);
 	if (len < 0) goto ERROR;
 
 	bodyOffset = offset + len;
 
-	/* ƒgƒ‰ƒbƒN––”ö‚ÌŠm”F */
+	/* ãƒˆãƒ©ãƒƒã‚¯æœ«å°¾ã®ç¢ºèª */
 	offset += len + bodylen;
 	len = _checkSmfTrackEnd(buf, offset - 3);
 	if (len < 0) goto ERROR;
 
-	/* æ“ªƒCƒxƒ“ƒgŠÔ‚Ìæ“¾ */
+	/* å…ˆé ­ã‚¤ãƒ™ãƒ³ãƒˆæ™‚é–“ã®å–å¾— */
 	len = smfLibGetSmfVar(buf, bodyOffset, &nextEventTime);
 	if (len < 0) goto ERROR;
 

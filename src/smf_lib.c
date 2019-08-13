@@ -6,6 +6,7 @@
  */
 
 #include "smf.h"
+#include "smf_lib.h"
 
 
 
@@ -38,17 +39,17 @@ const char midiNoteName[][5] = {
 
 
 /**
- * �}�C�N���b���A�^�C���x�[�X(I24Q8)�l�ɕϊ�����B
+ * マイクロ秒を、タイムベース(I16Q16)値に変換する。
  *
- * @param timeUs  �ϊ����鎞��(�}�C�N���b)
- * @param timeDiv ���ԒP�ʁB�S�����ӂ�̃^�C���x�[�X��
- * @param tempo   �e���|�B�S�������ӂ�̎���(us)�������Ă���̂Œ��ӁB
- * @return �ϊ������^�C���x�[�X�l�B
+ * @param timeUs  変換する時間(マイクロ秒)
+ * @param timeDiv 時間単位。全音符辺りのタイムベース数
+ * @param tempo   テンポ。４分音符辺りの時間(us)を示しているので注意。
+ * @return 変換したタイムベース値。
  */
 timebaseI24Q8_t smfLibUsToTimebase(int32_t timeUs, int32_t timeDiv, int32_t tempo)
 {
 
-	/** <����(us)> * <�S�����ӂ�̃^�C���x�[�X��(tb)>  / <�S�����̎���(us)> */
+	/** <時間(us)> * <全音符辺りのタイムベース数(tb)>  / <全音符の時間(us)> */
 	//return timeUs * timeDiv / (4 * tempo);
 	return (timeUs * timeDiv) / (tempo >> 8);
 }

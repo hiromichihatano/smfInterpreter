@@ -40,7 +40,7 @@ static len_t _doEventNoteOn(smfInfo *smfi, int32_t trackno, off_t beginOffset, u
 	uint8_t key = buf[offset];
 	uint8_t velocity = buf[offset + 1];
 
-	/** NoteOff ‚Ìê‡ */
+	/** NoteOff ã®å ´åˆ */
 	if(velocity == 0x00) {
 		len = _doEventNoteOff(smfi, trackno, offset, (noteOffStatusByte | channel) );
 	} else {
@@ -73,7 +73,7 @@ static len_t _doEventPolyKeyPressure(smfInfo *smfi, int32_t trackno, off_t begin
 
 /**
  *
- * @note ƒ`ƒƒƒlƒ‹ƒ‚[ƒhƒƒbƒZ[ƒW”ñ‘Î‰ž
+ * @note ãƒãƒ£ãƒãƒ«ãƒ¢ãƒ¼ãƒ‰ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸éžå¯¾å¿œ
  */
 static len_t _doEventControlChange(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
@@ -281,10 +281,10 @@ static len_t _doEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t
 	len_t len1=0, len2=0;
 	uint8_t statusByte = buf[beginOffset];
 
-	if(statusByte<0x80) { 	// ƒ‰ƒ“ƒjƒ“ƒOƒXƒe[ƒ^ƒX‚Ìê‡
+	if(statusByte<0x80) { 	// ãƒ©ãƒ³ãƒ‹ãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®å ´åˆ
 		statusByte = *prevStatusByte;
 	} else {
-		offset += 1;		// statusByte •ª‚ði‚ß‚é
+		offset += 1;		// statusByte åˆ†ã‚’é€²ã‚ã‚‹
 		len1 += 1;
 	}
 
@@ -354,7 +354,7 @@ int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t ti
 	len_t len;
 
 	if (tracki->endOffset <= offset) {
-		return 1;	/* ƒgƒ‰ƒbƒN‚ÌÅŒã */
+		return 1;	/* ãƒˆãƒ©ãƒƒã‚¯ã®æœ€å¾Œ */
 	}
 
 	while(nextEventTime < time) {

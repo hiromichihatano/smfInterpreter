@@ -121,7 +121,7 @@ off_t smfInterpreterHeaderInit(smfInfo *smfi, const uint8_t buf[], off_t beginOf
 	smfi->smfFormat = format;
 	smfi->smfNrTracks = nrTracks;
 	smfi->smfTimeDivision = timeDivision;
-	smfi->smfTempo = 1000 * 1000; 	/* ‰Šú’l‚Í 60 ‚É‚µ‚Ä‚¨‚­ */
+	smfi->smfTempo = 1000 * 1000; 	/* åˆæœŸå€¤ã¯ 60 ã«ã—ã¦ãŠã */
 
 	SMF_PRINTF("Header Init OK. HdLEN:%d Format:%d, Tracks:%d, TimeDiv:%d\n",
 			headerLen, format, nrTracks, timeDivision);
