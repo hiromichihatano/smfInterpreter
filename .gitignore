@@ -1,3 +1,6 @@
+# Build Objects
+build/
+
 # Prerequisites
 *.d
 
