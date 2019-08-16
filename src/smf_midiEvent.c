@@ -7,9 +7,6 @@
 
 #include "smf.h"
 
-#define SMF_PRINTF
-#define SMF_EPRINTF
-
 static len_t _doEventNoteOff(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
@@ -174,50 +171,50 @@ static int32_t _switchMetaEvent(smfInfo *smfi, int32_t trackno, off_t beginOff, 
 	const uint8_t *buf = smfi->smfDataBuf;
 	int32_t ret;
 
-	SMF_PRINTF("Meta ");
+	smfDbgPrintLog(SMFLOG_INFO, "Meta ");
 	switch((enumMetaEventType)metaEventType) {
 	case metaEventTypeSequenceNumber:
-		SMF_PRINTF("SequenceNumber ");
+		smfDbgPrintLog(SMFLOG_INFO, "SequenceNumber ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeText:
-		SMF_PRINTF("Text ");
+		smfDbgPrintLog(SMFLOG_INFO, "Text ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeTitle:
-		SMF_PRINTF("Title ");
+		smfDbgPrintLog(SMFLOG_INFO, "Title ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeInstrument:
-		SMF_PRINTF("Inst ");
+		smfDbgPrintLog(SMFLOG_INFO, "Inst ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeProgramName:
-		SMF_PRINTF("ProgName ");
+		smfDbgPrintLog(SMFLOG_INFO, "ProgName ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeDevice:
-		SMF_PRINTF("Device ");
+		smfDbgPrintLog(SMFLOG_INFO, "Device ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeChannelPrefix:
-		SMF_PRINTF("ChPref. ");
+		smfDbgPrintLog(SMFLOG_INFO, "ChPref. ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypePort:
-		SMF_PRINTF("Port ");
+		smfDbgPrintLog(SMFLOG_INFO, "Port ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeTrackEnd:
-		SMF_PRINTF("TrackEnd ");
+		smfDbgPrintLog(SMFLOG_INFO, "TrackEnd ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
@@ -227,22 +224,22 @@ static int32_t _switchMetaEvent(smfInfo *smfi, int32_t trackno, off_t beginOff, 
 		break;
 
 	case metaEventTypeSmpteOffset:
-		SMF_PRINTF("SMPTE ");
+		smfDbgPrintLog(SMFLOG_INFO, "SMPTE ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeRhythm:
-		SMF_PRINTF("Rhythm ");
+		smfDbgPrintLog(SMFLOG_INFO, "Rhythm ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeKeySign:
-		SMF_PRINTF("KeySign ");
+		smfDbgPrintLog(SMFLOG_INFO, "KeySign ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	default:
-		SMF_PRINTF("?? ");
+		smfDbgPrintLog(SMFLOG_INFO, "?? ");
 		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 	}
@@ -269,7 +266,7 @@ static len_t _doEventMetaEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset
 	return len + 1 + metaEventLen;
 
 ERR:
-	SMF_EPRINTF("_doEventMetaEvent, offset %d (0x%x)\n", offset, offset);
+	smfDbgPrintLog(SMFLOG_ERR, "_doEventMetaEvent, offset %d (0x%x)\n", offset, offset);
 	return -1;
 }
 
@@ -289,7 +286,7 @@ static len_t _doEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t
 	}
 
 	if(statusByte < 0x80) {
-		SMF_EPRINTF("previous StatusByte 0x%02x is Invalid.\n", statusByte);
+		smfDbgPrintLog(SMFLOG_ERR, "previous StatusByte 0x%02x is Invalid.\n", statusByte);
 		goto ERR;
 	} else if (statusByte <= 0x8f) {
 		len2 = _doEventNoteOff(smfi, trackno, offset, statusByte);
@@ -310,7 +307,7 @@ static len_t _doEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t
 	} else if (statusByte == 0xff) {
 		len2 = _doEventMetaEvent(smfi, trackno, offset, statusByte);
 	} else {
-		SMF_EPRINTF("StatusByte 0x%02x is Invalid.\n", statusByte);
+		smfDbgPrintLog(SMFLOG_ERR, "StatusByte 0x%02x is Invalid.\n", statusByte);
 		goto ERR;
 	}
 
@@ -338,7 +335,7 @@ len_t smfMidiEventParseOneEvent(smfInfo *smfi, int32_t trackno, off_t beginOffse
 
 
 ERR:
-	SMF_EPRINTF("getEvent offset %d, (0x%x)\n", offset, offset);
+	smfDbgPrintLog(SMFLOG_ERR, "getEvent offset %d, (0x%x)\n", offset, offset);
 	return -1;
 
 }
@@ -359,7 +356,7 @@ int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t ti
 
 	while(nextEventTime < time) {
 		timebase_t nextDelta;
-		SMF_PRINTF("[%4d/%3d] (%6d, +0x%08x) <Ch %02d> ",
+		smfDbgPrintLog(SMFLOG_INFO, "[%4d/%3d] (%6d, +0x%08x) <Ch %02d> ",
 				nextEventTime / smfi->smfTimeDivision,
 				nextEventTime % smfi->smfTimeDivision,
 				nextEventTime,
@@ -382,7 +379,7 @@ int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t ti
 	return 0;
 
 ERR:
-	SMF_EPRINTF("on parsing, offset %d (0x%x)\n", offset, offset);
+	smfDbgPrintLog(SMFLOG_ERR, "on parsing, offset %d (0x%x)\n", offset, offset);
 	return -1;
 }
 

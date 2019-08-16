@@ -36,6 +36,7 @@ add_executable(smfsample
     ${PROJECT_SOURCE_DIR}/src/smf_lib.c
     ${PROJECT_SOURCE_DIR}/src/smf_midiEvent.c
     ${PROJECT_SOURCE_DIR}/src/smf_trackHeader.c
+    ${PROJECT_SOURCE_DIR}/src/smf_debug.c
     ${PROJECT_SOURCE_DIR}/sample/sample.c
 )
 

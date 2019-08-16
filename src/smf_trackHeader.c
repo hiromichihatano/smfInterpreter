@@ -8,9 +8,6 @@
 
 #include "smf.h"
 
-#define SMF_PRINTF
-#define SMF_EPRINTF
-
 static off_t _checkSmfTrackChunkType(const uint8_t smfBuf[], off_t off)
 {
 
@@ -21,7 +18,7 @@ static off_t _checkSmfTrackChunkType(const uint8_t smfBuf[], off_t off)
 		return 4;
 	}
 
-	SMF_EPRINTF("Track Chunk is not matchked. @offset 0x%08x\n", off);
+	smfDbgPrintLog(SMFLOG_ERR, "Track Chunk is not matchked. @offset 0x%08x\n", off);
 	return -1;
 }
 
@@ -43,7 +40,7 @@ static off_t _checkSmfTrackEnd(const uint8_t smfBuf[], off_t off)
 		smfBuf[off + 2] == 0x00){
 		return 3;
 	}
-	SMF_EPRINTF("Track End MetaEvent is not matchked. @offset 0x%08x\n", off);
+	smfDbgPrintLog(SMFLOG_ERR, "Track End MetaEvent is not matchked. @offset 0x%08x\n", off);
 	return -1;
 
 }
@@ -75,8 +72,7 @@ off_t smfInterpreterTrackInit(smfTrackInfo *tracki, const uint8_t buf[], off_t b
 	len = smfLibGetSmfVar(buf, bodyOffset, &nextEventTime);
 	if (len < 0) goto ERROR;
 
-	SMF_PRINTF("TrackInit OK. track Offset 0x%06x, Length %d, "
-			"1stEventTimeBase %d \n",
+	smfDbgPrintLog(SMFLOG_INFO, "TrackInit OK. track Offset 0x%06x, Length %d, 1stEventTimeBase %d \n",
 			beginOff, bodylen, nextEventTime);
 
 
@@ -88,6 +84,6 @@ off_t smfInterpreterTrackInit(smfTrackInfo *tracki, const uint8_t buf[], off_t b
 	return offset;
 
 ERROR:
-	SMF_EPRINTF("SMF Track init Failed.\n");
+	smfDbgPrintLog(SMFLOG_ERR, "SMF Track init Failed.\n");
 	return -1;
 }

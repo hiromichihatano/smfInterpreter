@@ -7,9 +7,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "smf.h"
 
-#define BUFLEN (1024*128)	/* 128KB */
+#define BUFLEN (1024*1024)	/* 1024KB */
 
 
 /**
@@ -32,11 +33,10 @@ void showBinary(uint8_t buf[], int32_t len)
 
 int main(int argc, char *argv[])
 {
+	const int TICK_US = 10 * 1000; // us
 	uint8_t smfBuf[BUFLEN];
 	int ch;
 	int32_t smfLen, i;
-	FILE *fp;
-	timebase_t timebase = 0;
 
 	smfInfo smfi;
 
@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	fp = fopen(argv[1], "rb");
+	FILE *fp = fopen(argv[1], "rb"); // MIDI(SMF) ファイルの読込み
 	if (fp == NULL) {
 		printf("file %s open failed.\n", argv[1]);
 		return -2;
 	}
 
-	for(i=0; i<BUFLEN; i++){
+	for(i=0; i<BUFLEN; i++){ // バイト配列に格納
 		ch = fgetc(fp);
 		if(ch == EOF) {
 			break;
@@ -62,14 +62,24 @@ int main(int argc, char *argv[])
 	smfLen = i-1;
 	//showBinary(smfBuf, smfLen);
 	printf("length is dec:%d, hex:%x\n", smfLen, smfLen);
+
+	// デバッグ用関数の登録
+	smfDbgRegisterLogFunc(SMFLOG_INFO, vprintf);
+	smfDbgRegisterLogFunc(SMFLOG_STD, vprintf);
+	smfDbgRegisterLogFunc(SMFLOG_ERR, vprintf);
+
+	// SMF の初期化
 	smfLibInterpreterInit(&smfi, smfBuf, smfLen);
 
+	timebase_t timebase = 0;
+	uint64_t time = 0u;
 	while(timebase < 51700) {
 		smfMidiEventTimerTick(&smfi, timebase);
-
-		usleep(100 * 1000);
+		usleep(TICK_US);
 		//timebase += _usToTimebase(100*1000, smfi.smfTimeDivision, smfi.smfTempo);
-		timebase += smfLibUsToTimebase(1000*1000, smfi.smfTimeDivision, smfi.smfTempo);
+		timebase += smfLibUsToTimebase(TICK_US, smfi.smfTimeDivision, smfi.smfTempo);
+		time += TICK_US;
+		// printf("timebase %5d, time=%08d(us)\n", timebase, time);
 		fflush(stdout);
 	}
 

@@ -51,7 +51,8 @@ timebaseI24Q8_t smfLibUsToTimebase(int32_t timeUs, int32_t timeDiv, int32_t temp
 
 	/** <時間(us)> * <全音符辺りのタイムベース数(tb)>  / <全音符の時間(us)> */
 	//return timeUs * timeDiv / (4 * tempo);
-	return (timeUs * timeDiv) / (tempo >> 8);
+	// return (timeUs * timeDiv) / (tempo >> 8);
+	return (timeUs * timeDiv) / tempo;
 }
 
 
@@ -129,7 +130,7 @@ int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen
 	int32_t i;
 	smfTrackInfo *tracki;
 
-	SMF_PRINTF("smfInterPreterInit starting...\n");
+	smfDbgPrintLog(SMFLOG_STD, "smfInterPreterInit starting...\n");
 	smfi->smfDataBuf = buf;
 
 	offset = smfInterpreterHeaderInit(smfi, buf, offset);
@@ -138,11 +139,11 @@ int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen
 		tracki = &(smfi->tracki[i]);
 		offset = smfInterpreterTrackInit(tracki, buf, offset);
 		if(offset < 0) {
-			SMF_EPRINTF("SMF Track %d Init Failed.\n", i);
+			smfDbgPrintLog(SMFLOG_ERR, "SMF Track %d Init Failed.\n", i);
 			return -1;
 		}
 	}
 
-	SMF_PRINTF("smfInterPreterInit done.\n");
+	smfDbgPrintLog(SMFLOG_ERR, "smfInterPreterInit done.\n");
 	return 0;
 }

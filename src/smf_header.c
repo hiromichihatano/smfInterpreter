@@ -7,9 +7,6 @@
 
 #include "smf.h"
 
-#define SMF_PRINTF
-#define SMF_EPRINTF
-
 static len_t _checkSmfHeaderChunkType(const uint8_t smfBuf[], off_t off)
 {
 
@@ -33,7 +30,7 @@ static len_t _getSmfHeaderLength(const uint8_t smfBuf[], off_t off, int32_t *hea
 	retVal = smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
 
 	if(retVal != expVal) {
-		SMF_EPRINTF("SMF Header Length is %d. (expected 6)\n");
+		smfDbgPrintLog(SMFLOG_ERR, "SMF Header Length is %d. (expected 6)\n");
 		return -1;
 	}
 
@@ -50,7 +47,7 @@ static len_t _getSmfFormatType(const uint8_t smfBuf[], off_t off, int32_t *forma
 	retVal = smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
 
 	if(retVal < 0 || 2 < retVal) {
-		SMF_EPRINTF("SMF Format Type is %d. (expected between 0 and 2)\n");
+		smfDbgPrintLog(SMFLOG_ERR, "SMF Format Type is %d. (expected between 0 and 2)\n");
 		return -1;
 	}
 
@@ -67,7 +64,7 @@ static len_t _getSmfNRTracks(const uint8_t smfBuf[], off_t off, int32_t *tracks)
 	retVal = smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
 
 	if(MAXTRACKS < retVal) {
-		SMF_EPRINTF("SMF Number of Tracks is %d. (OVER %d)\n", retVal, MAXTRACKS);
+		smfDbgPrintLog(SMFLOG_ERR, "SMF Number of Tracks is %d. (OVER %d)\n", retVal, MAXTRACKS);
 		return -1;
 	}
 
@@ -85,7 +82,7 @@ static len_t _getSmfTimeDivision(const uint8_t smfBuf[], off_t off, int32_t *tim
 	retVal = smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
 
 	if(0x8000 < retVal) {
-		SMF_EPRINTF("SMF Time Base is %d. (expected lower than 16)\n");
+		smfDbgPrintLog(SMFLOG_ERR, "SMF Time Base is %d. (expected lower than 16)\n");
 		return -1;
 	}
 
@@ -123,13 +120,13 @@ off_t smfInterpreterHeaderInit(smfInfo *smfi, const uint8_t buf[], off_t beginOf
 	smfi->smfTimeDivision = timeDivision;
 	smfi->smfTempo = 1000 * 1000; 	/* 初期値は 60 にしておく */
 
-	SMF_PRINTF("Header Init OK. HdLEN:%d Format:%d, Tracks:%d, TimeDiv:%d\n",
+	smfDbgPrintLog(SMFLOG_STD, "Header Init OK. HdLEN:%d Format:%d, Tracks:%d, TimeDiv:%d\n",
 			headerLen, format, nrTracks, timeDivision);
 
 	return offset + len;
 
 ERROR:
-	SMF_EPRINTF("SMF Init Failed.\n");
+	smfDbgPrintLog(SMFLOG_ERR, "SMF Init Failed.\n");
 	return -1;
 }
 
