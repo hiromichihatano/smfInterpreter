@@ -9,9 +9,10 @@
 #define SMF_LIB_H_
 
 #include <stdint.h>
+#include <stddef.h>
 
 //typedef int32_t size_t;
-typedef int32_t off_t;
+//typedef int32_t off_t;
 typedef int32_t len_t;
 typedef int32_t timebase_t;
 typedef int32_t timebaseI24Q8_t;
