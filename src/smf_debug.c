@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <smf_debug.h>
 #include <stdarg.h>
+#include "smf_base.h"
+#include "smf_debug.h"
 
 static print_log_t _printLogFuncs[SMFLOG_MAX] = {NULL, NULL, NULL};
 

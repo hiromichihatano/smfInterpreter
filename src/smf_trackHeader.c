@@ -6,9 +6,12 @@
  */
 
 
-#include "smf.h"
+#include "smf_base.h"
+#include "smf_lib.h"
+#include "smf_debug.h"
+#include "smf_trackHeader.h"
 
-static off_t _checkSmfTrackChunkType(const uint8_t smfBuf[], off_t off)
+static smfoff_t _checkSmfTrackChunkType(const uint8_t smfBuf[], smfoff_t off)
 {
 
 	if(smfBuf[off + 0] == (uint8_t)'M' &&
@@ -22,18 +25,18 @@ static off_t _checkSmfTrackChunkType(const uint8_t smfBuf[], off_t off)
 	return -1;
 }
 
-static off_t _getSmfTrackBodyLength(const uint8_t smfBuf[], off_t off, size_t *bodylen)
+static smfoff_t _getSmfTrackBodyLength(const uint8_t smfBuf[], smfoff_t off, smfsize_t *bodylen)
 {
-	const len_t fixedSize = 4;
-	size_t retVal;
+	const smflen_t fixedSize = 4;
+	smfsize_t retVal;
 
-	retVal = (size_t)smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
+	retVal = (smfsize_t)smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
 
 	*bodylen = retVal;
 	return fixedSize;
 }
 
-static off_t _checkSmfTrackEnd(const uint8_t smfBuf[], off_t off)
+static smfoff_t _checkSmfTrackEnd(const uint8_t smfBuf[], smfoff_t off)
 {
 	if(smfBuf[off + 0] == 0xff &&
 		smfBuf[off + 1] == 0x2f &&
@@ -45,11 +48,11 @@ static off_t _checkSmfTrackEnd(const uint8_t smfBuf[], off_t off)
 
 }
 
-off_t smfInterpreterTrackInit(smfTrackInfo *tracki, const uint8_t buf[], off_t beginOff)
+smfoff_t smfInterpreterTrackInit(smfTrackInfo *tracki, const uint8_t buf[], smfoff_t beginOff)
 {
-	off_t offset = beginOff, bodyOffset;
-	len_t len;
-	size_t bodylen;
+	smfoff_t offset = beginOff, bodyOffset;
+	smflen_t len;
+	smfsize_t bodylen;
 	timebase_t nextEventTime;
 
 	/* MThd の確認 */

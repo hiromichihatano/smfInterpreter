@@ -80,9 +80,9 @@ int main(int argc, char *argv[])
 	printf("length is dec:%d, hex:%x\n", smfLen, smfLen);
 
 	// デバッグ用関数の登録
-	smfDbgRegisterLogFunc(SMFLOG_INFO, vprintf);
-	smfDbgRegisterLogFunc(SMFLOG_STD, vprintf);
-	smfDbgRegisterLogFunc(SMFLOG_ERR, vprintf);
+	smfLibRegisterLogFunc(SMFLOG_INFO, vprintf);
+	smfLibRegisterLogFunc(SMFLOG_STD, vprintf);
+	smfLibRegisterLogFunc(SMFLOG_ERR, vprintf);
 
 	// SMF の初期化
 	smfLibInterpreterInit(&smfi, _smfBuf, smfLen);

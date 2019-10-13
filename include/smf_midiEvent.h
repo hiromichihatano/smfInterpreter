@@ -8,7 +8,8 @@
 #ifndef SMF_MIDIEVENT_H_
 #define SMF_MIDIEVENT_H_
 
-#include "smf.h"
+#include "smf_base.h"
+#include "smf_callback.h"
 
 typedef enum metaEventType {
 	metaEventTypeSequenceNumber = 0x00,
@@ -31,8 +32,6 @@ typedef enum metaEventType {
 } enumMetaEventType;
 
 
-
-extern int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, timebase_t time);
 extern int32_t smfMidiEventTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, timebase_t time);
 
 #endif /* SMF_MIDIEVENT_H_ */

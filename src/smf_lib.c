@@ -5,7 +5,11 @@
  *      Author: hiromichihatano
  */
 
-#include "smf.h"
+#include "smf_base.h"
+#include "smf_debug.h"
+#include "smf_header.h"
+#include "smf_trackHeader.h"
+#include "smf_midiEvent.h"
 #include "smf_lib.h"
 
 
@@ -56,7 +60,7 @@ timebaseI24Q8_t smfLibUsToTimebase(int32_t timeUs, int32_t timeDiv, int32_t temp
 }
 
 
-uint32_t smfLibGetSmfFixedLe7(const uint8_t smfBuf[], off_t off, len_t len)
+uint32_t smfLibGetSmfFixedLe7(const uint8_t smfBuf[], smfoff_t off, smflen_t len)
 {
 	int32_t i;
 	uint32_t ret = 0;
@@ -70,7 +74,7 @@ uint32_t smfLibGetSmfFixedLe7(const uint8_t smfBuf[], off_t off, len_t len)
 }
 
 
-uint32_t smfLibGetSmfFixedBe8(const uint8_t smfBuf[], off_t off, len_t len)
+uint32_t smfLibGetSmfFixedBe8(const uint8_t smfBuf[], smfoff_t off, smflen_t len)
 {
 	int32_t i;
 	uint32_t ret = 0;
@@ -84,7 +88,7 @@ uint32_t smfLibGetSmfFixedBe8(const uint8_t smfBuf[], off_t off, len_t len)
 }
 
 
-len_t smfLibGetSmfVar(const uint8_t smfBuf[], off_t off, int32_t *value)
+smflen_t smfLibGetSmfVar(const uint8_t smfBuf[], smfoff_t off, int32_t *value)
 {
 	int32_t i;
 	int32_t retVal = 0, ret=-1;
@@ -115,7 +119,7 @@ void smfLibRewindToStart(smfInfo *smfi)
 {
 	for(int32_t i=0; i<smfi->smfNrTracks; i++){
 		int32_t initOffset = smfi->tracki[i].bodyOffset;
-		len_t initEventTime;
+		smflen_t initEventTime;
 		smfLibGetSmfVar(smfi->smfDataBuf, initOffset, &initEventTime);
 		smfi->tracki[i].nextEventOffset = initOffset;
 		smfi->tracki[i].nextEventTime = initEventTime;
@@ -125,8 +129,8 @@ void smfLibRewindToStart(smfInfo *smfi)
 
 int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen)
 {
-	off_t offset = 0;
-	len_t len;
+	smfoff_t offset = 0;
+	smflen_t len;
 	int32_t i;
 	smfTrackInfo *tracki;
 
@@ -161,4 +165,15 @@ int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen
  */
 int32_t smfLibTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, timebase_t time) {
 	return smfMidiEventTimerTick(smfi, smfcb, time);
+}
+
+
+/**
+ * @brief ログ出力用の関数(vprintf 形式) を登録する
+ * 
+ * @param loglevel 登録する関数のログレベル
+ * @param func 登録する関数。登録を解除する場合は、NULL を指定する。
+ */
+void smfLibRegisterLogFunc(smf_loglevel_t loglevel, print_log_t func) {
+	smfDbgRegisterLogFunc(loglevel, func);
 }

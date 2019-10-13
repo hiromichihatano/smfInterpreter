@@ -5,9 +5,12 @@
  *      Author: hiromichihatano
  */
 
-#include "smf.h"
+#include "smf_base.h"
+#include "smf_lib.h"
+#include "smf_debug.h"
+#include "smf_header.h"
 
-static len_t _checkSmfHeaderChunkType(const uint8_t smfBuf[], off_t off)
+static smflen_t _checkSmfHeaderChunkType(const uint8_t smfBuf[], smfoff_t off)
 {
 
 	if(smfBuf[off + 0] == (uint8_t)'M' &&
@@ -21,9 +24,9 @@ static len_t _checkSmfHeaderChunkType(const uint8_t smfBuf[], off_t off)
 }
 
 
-static len_t _getSmfHeaderLength(const uint8_t smfBuf[], off_t off, int32_t *headerlen)
+static smflen_t _getSmfHeaderLength(const uint8_t smfBuf[], smfoff_t off, int32_t *headerlen)
 {
-	const len_t fixedSize = 4;
+	const smflen_t fixedSize = 4;
 	const int32_t expVal = 6;
 	int32_t retVal;
 
@@ -39,9 +42,9 @@ static len_t _getSmfHeaderLength(const uint8_t smfBuf[], off_t off, int32_t *hea
 }
 
 
-static len_t _getSmfFormatType(const uint8_t smfBuf[], off_t off, int32_t *format)
+static smflen_t _getSmfFormatType(const uint8_t smfBuf[], smfoff_t off, int32_t *format)
 {
-	const len_t fixedSize = 2;
+	const smflen_t fixedSize = 2;
 	int32_t retVal;
 
 	retVal = smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
@@ -56,9 +59,9 @@ static len_t _getSmfFormatType(const uint8_t smfBuf[], off_t off, int32_t *forma
 
 }
 
-static len_t _getSmfNRTracks(const uint8_t smfBuf[], off_t off, int32_t *tracks)
+static smflen_t _getSmfNRTracks(const uint8_t smfBuf[], smfoff_t off, int32_t *tracks)
 {
-	const len_t fixedSize = 2;
+	const smflen_t fixedSize = 2;
 	int32_t retVal;
 
 	retVal = smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
@@ -74,9 +77,9 @@ static len_t _getSmfNRTracks(const uint8_t smfBuf[], off_t off, int32_t *tracks)
 }
 
 
-static len_t _getSmfTimeDivision(const uint8_t smfBuf[], off_t off, int32_t *timeBase)
+static smflen_t _getSmfTimeDivision(const uint8_t smfBuf[], smfoff_t off, int32_t *timeBase)
 {
-	const len_t fixedSize = 2;
+	const smflen_t fixedSize = 2;
 	int32_t retVal;
 
 	retVal = smfLibGetSmfFixedBe8(smfBuf, off, fixedSize);
@@ -90,10 +93,10 @@ static len_t _getSmfTimeDivision(const uint8_t smfBuf[], off_t off, int32_t *tim
 	return fixedSize;
 }
 
-off_t smfInterpreterHeaderInit(smfInfo *smfi, const uint8_t buf[], off_t beginOff)
+smfoff_t smfInterpreterHeaderInit(smfInfo *smfi, const uint8_t buf[], smfoff_t beginOff)
 {
-	off_t offset = beginOff;
-	len_t len;
+	smfoff_t offset = beginOff;
+	smflen_t len;
 	int32_t headerLen = -1, format = -1, nrTracks=-1, timeDivision=-1;
 
 	len = _checkSmfHeaderChunkType(buf, offset);

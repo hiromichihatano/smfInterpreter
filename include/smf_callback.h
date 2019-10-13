@@ -9,7 +9,6 @@
 #define SMF_CALLBACK_H_
 
 #include "smf_base.h"
-#include "smf_lib.h"
 
 /**
  * @brief Midi Event 発生時に呼び出されるコールバック関数
@@ -90,7 +89,7 @@ typedef struct smf_callback {
      * 
      * @note 現在上位では SysEx を全くデコードしない。Type, subID 等は関数内でデコードすること
      */
-    void (*sysEx)(const uint8_t buf[], off_t beginOff, len_t sysExLen, uint8_t sysExType);
+    void (*sysEx)(const uint8_t buf[], smfoff_t beginOff, smflen_t sysExLen, uint8_t sysExType);
 
     /**
      * @brief Meta イベントに対応するコールバック関数
@@ -102,7 +101,7 @@ typedef struct smf_callback {
      * 
      * @note 現在、テンポイベントのみ別で処理される。それ以外はこの関数で行う
      */
-    void (*metaEvent)(const uint8_t buf[], off_t beginOff, len_t metaEventLen, uint8_t metaEventType);
+    void (*metaEvent)(const uint8_t buf[], smfoff_t beginOff, smflen_t metaEventLen, uint8_t metaEventType);
 
     /**
      * @brief テンポセット Meta イベントに対応するコールバック関数

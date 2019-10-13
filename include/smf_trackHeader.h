@@ -8,7 +8,8 @@
 #ifndef SMF_TRACKHEADER_H_
 #define SMF_TRACKHEADER_H_
 
+#include "smf_base.h"
 
-extern off_t smfInterpreterTrackInit(smfTrackInfo *tracki, const uint8_t buf[], off_t beginOff);
+extern smfoff_t smfInterpreterTrackInit(smfTrackInfo *tracki, const uint8_t buf[], smfoff_t beginOff);
 
 #endif /* SMF_TRACKHEADER_H_ */

@@ -34,7 +34,7 @@ static void _smfCallbackPolyKeyPressure(uint8_t channel, uint8_t key, uint8_t ve
 static void _smfCallbackControlChange(uint8_t channel, uint8_t ctrlNum, uint8_t value)
 {
 	printf("CTRL ");
-	smfDbgPrintLog(SMFLOG_INFO, "Ch %d, ctrl %d, val %d\n", channel, ctrlNum, value);
+	printf("Ch %d, ctrl %d, val %d\n", channel, ctrlNum, value);
 }
 
 
@@ -59,10 +59,10 @@ static void _smfCallbackPitchBend(uint8_t channel, int32_t bendValue)
 }
 
 
-static void _smfCallbackSysEx(const uint8_t buf[], off_t beginOff, len_t sysExLen, uint8_t sysExType)
+static void _smfCallbackSysEx(const uint8_t buf[], smfoff_t beginOff, smflen_t sysExLen, uint8_t sysExType)
 {
 	int32_t i;
-	off_t offset = beginOff; UNUSED(offset);
+	off_t offset = beginOff;
 
 	printf("SysEx ");
 	printf("type: %x, len=%d, data:", sysExType, sysExLen);
@@ -74,10 +74,10 @@ static void _smfCallbackSysEx(const uint8_t buf[], off_t beginOff, len_t sysExLe
 }
 
 
-static void _smfCallbackMetaEvent(const uint8_t buf[], off_t beginOff, len_t metaEventLen, uint8_t metaEventType)
+static void _smfCallbackMetaEvent(const uint8_t buf[], smfoff_t beginOff, smflen_t metaEventLen, uint8_t metaEventType)
 {
 	int32_t i;
-	off_t offset = beginOff; UNUSED(offset);
+	off_t offset = beginOff;
 
 	printf("type: %x, len=%d, data:", metaEventType, metaEventLen);
 

@@ -8,15 +8,10 @@
 #ifndef SMF_H_
 #define SMF_H_
 
-#include <stdio.h>
 #include <stdint.h>
 
-
+#include "smf_base.h"
 #include "smf_lib.h"
 #include "smf_callback.h"
-#include "smf_header.h"
-#include "smf_trackHeader.h"
-#include "smf_midiEvent.h"
-#include "smf_debug.h"
 
 #endif /* SMF_H_ */
