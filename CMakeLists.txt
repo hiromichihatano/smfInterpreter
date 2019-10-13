@@ -31,13 +31,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
 
 add_executable(smfsample
-    ${PROJECT_SOURCE_DIR}/src/smf_dummyCallback.c
     ${PROJECT_SOURCE_DIR}/src/smf_header.c
     ${PROJECT_SOURCE_DIR}/src/smf_lib.c
     ${PROJECT_SOURCE_DIR}/src/smf_midiEvent.c
     ${PROJECT_SOURCE_DIR}/src/smf_trackHeader.c
     ${PROJECT_SOURCE_DIR}/src/smf_debug.c
     ${PROJECT_SOURCE_DIR}/sample/sample.c
+    ${PROJECT_SOURCE_DIR}/sample/sample_callback.c
 )
 
 target_include_directories(smfsample

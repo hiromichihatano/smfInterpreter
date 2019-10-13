@@ -9,9 +9,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "smf.h"
+#include "sample.h"
 
 #define BUFLEN (1024*1024)	/* 1024KB */
 
+static uint8_t _smfBuf[BUFLEN];
 
 /**
  * バイナリを 16bytes ずつオフセット付きで表示する
@@ -29,16 +31,14 @@ void showBinary(uint8_t buf[], int32_t len)
 	puts("");
 }
 
-
-
-int main(int argc, char *argv[])
+/*
+ * 引数を解析し、ファイルの内容を _smfBuf に格納する
+ * 読み込んだファイル長を返す。エラーの場合は 0 未満の値を返す
+ */
+static int32_t _parse_arguments(int argc, char *argv[])
 {
-	const int TICK_US = 10 * 1000; // us
-	uint8_t smfBuf[BUFLEN];
-	int ch;
-	int32_t smfLen, i;
-
-	smfInfo smfi;
+	int16_t ch;
+	int32_t i;
 
 	if (argc < 2) {
 		printf("usage: %s <SMF FileName>\n", argv[0]);
@@ -52,15 +52,31 @@ int main(int argc, char *argv[])
 	}
 
 	for(i=0; i<BUFLEN; i++){ // バイト配列に格納
-		ch = fgetc(fp);
+		ch = (int16_t)fgetc(fp);
 		if(ch == EOF) {
 			break;
 		}
-		smfBuf[i] = (uint8_t)ch;
+		_smfBuf[i] = (uint8_t)ch;
 	}
 
-	smfLen = i-1;
-	//showBinary(smfBuf, smfLen);
+	fclose(fp);
+	return i-1; // EOF 分をデクリメント
+}
+
+int main(int argc, char *argv[])
+{
+	const int TICK_US = 10 * 1000; // us
+	int32_t smfLen, i;
+
+	smfInfo smfi;
+	smf_callback_t smfcb;
+
+	smfLen = _parse_arguments(argc, argv);
+	if (smfLen < 0) {
+		exit(smfLen);
+	}
+
+	//showBinary(_smfBuf, smfLen);
 	printf("length is dec:%d, hex:%x\n", smfLen, smfLen);
 
 	// デバッグ用関数の登録
@@ -69,18 +85,16 @@ int main(int argc, char *argv[])
 	smfDbgRegisterLogFunc(SMFLOG_ERR, vprintf);
 
 	// SMF の初期化
-	smfLibInterpreterInit(&smfi, smfBuf, smfLen);
+	smfLibInterpreterInit(&smfi, _smfBuf, smfLen);
+
+	// Callback 関数の登録
+	smfsample_set_callbacks(&smfcb);
 
 	timebase_t timebase = 0;
-	uint64_t time = 0u;
 	while(timebase < 51700) {
-		smfMidiEventTimerTick(&smfi, timebase);
+		smfLibTimerTick(&smfi, &smfcb, timebase);
 		usleep(TICK_US);
-		//timebase += _usToTimebase(100*1000, smfi.smfTimeDivision, smfi.smfTempo);
 		timebase += smfLibUsToTimebase(TICK_US, smfi.smfTimeDivision, smfi.smfTempo);
-		time += TICK_US;
-		// printf("timebase %5d, time=%08d(us)\n", timebase, time);
-		fflush(stdout);
 	}
 
 	return 0;

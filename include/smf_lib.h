@@ -8,20 +8,10 @@
 #ifndef SMF_LIB_H_
 #define SMF_LIB_H_
 
-#include <stdint.h>
-#include <stddef.h>
-
-//typedef int32_t size_t;
-//typedef int32_t off_t;
-typedef int32_t len_t;
-typedef int32_t timebase_t;
-typedef int32_t timebaseI24Q8_t;
+#include "smf_callback.h"
+#include "smf_base.h"
 
 #define MAXTRACKS (20)
-
-#ifndef UNUSED
-	#define UNUSED(x) ((void)(x))
-#endif
 
 typedef struct {
 	off_t bodyOffset;			/** MIDIデータ本体のオフセット */
@@ -52,5 +42,6 @@ extern uint32_t smfLibGetSmfFixedBe8(const uint8_t smfBuf[], off_t off, len_t le
 extern len_t smfLibGetSmfVar(const uint8_t smfBuf[], off_t off, int32_t *value);
 extern void smfLibRewindToStart(smfInfo *smfi);
 extern int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen);
+extern int32_t smfLibTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, timebase_t time);
 
 #endif /* SMF_LIB_H_ */

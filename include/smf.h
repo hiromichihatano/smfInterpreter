@@ -13,10 +13,10 @@
 
 
 #include "smf_lib.h"
+#include "smf_callback.h"
 #include "smf_header.h"
 #include "smf_trackHeader.h"
 #include "smf_midiEvent.h"
-#include "smf_callback.h"
 #include "smf_debug.h"
 
 #endif /* SMF_H_ */

@@ -147,3 +147,18 @@ int32_t smfLibInterpreterInit(smfInfo *smfi, const uint8_t buf[], int32_t bufLen
 	smfDbgPrintLog(SMFLOG_ERR, "smfInterPreterInit done.\n");
 	return 0;
 }
+
+/**
+ * @brief MIDI を 1tick 分再生を進める
+ * 
+ * @param smfi SMF 情報
+ * @param smfcb SMF コールバック関数情報
+ * @param time 関数呼び出し時の再生時間(呼び出し元で時間を調整すること)
+ * @return ステータス(0:再生中 / 1:再生終了)
+ * 
+ * @note time が timebase_t 単位であることに注意すること
+ *       値は smfLibUsToTimebase で usec -> timebase_t に変換できる
+ */
+int32_t smfLibTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, timebase_t time) {
+	return smfMidiEventTimerTick(smfi, smfcb, time);
+}

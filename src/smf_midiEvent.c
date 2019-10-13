@@ -7,7 +7,7 @@
 
 #include "smf.h"
 
-static len_t _doEventNoteOff(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventNoteOff(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len = 2;
@@ -17,16 +17,13 @@ static len_t _doEventNoteOff(smfInfo *smfi, int32_t trackno, off_t beginOffset, 
 	uint8_t key = buf[offset];
 	uint8_t velocity = buf[offset + 1];
 
-	ret = smfCallbackNoteOff((uint8_t)channel, (uint8_t)key, (uint8_t)velocity);
-	if(ret < 0) {
-		len = -1;
-	}
+	smfcb->noteOff((uint8_t)channel, (uint8_t)key, (uint8_t)velocity);
 
 	return len;
 }
 
 
-static len_t _doEventNoteOn(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventNoteOn(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len = 2;
@@ -39,18 +36,15 @@ static len_t _doEventNoteOn(smfInfo *smfi, int32_t trackno, off_t beginOffset, u
 
 	/** NoteOff の場合 */
 	if(velocity == 0x00) {
-		len = _doEventNoteOff(smfi, trackno, offset, (noteOffStatusByte | channel) );
+		len = _doEventNoteOff(smfi, smfcb, trackno, offset, (noteOffStatusByte | channel) );
 	} else {
-		ret = smfCallbackNoteOn(channel, key, velocity);
-		if(ret < 0) {
-			len = -1;
-		}
+		smfcb->noteOn(channel, key, velocity);
 	}
 	return len;
 }
 
 
-static len_t _doEventPolyKeyPressure(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventPolyKeyPressure(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len = 2;
@@ -60,10 +54,7 @@ static len_t _doEventPolyKeyPressure(smfInfo *smfi, int32_t trackno, off_t begin
 	uint8_t key = buf[offset];
 	uint8_t velocity = buf[offset + 1];
 
-	ret = smfCallbackPolyKeyPressure(channel, key, velocity);
-	if(ret < 0) {
-		len = -1;
-	}
+	smfcb->polyKeyPressure(channel, key, velocity);
 	return len;
 }
 
@@ -72,7 +63,7 @@ static len_t _doEventPolyKeyPressure(smfInfo *smfi, int32_t trackno, off_t begin
  *
  * @note チャネルモードメッセージ非対応
  */
-static len_t _doEventControlChange(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventControlChange(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len = 2;
@@ -82,7 +73,7 @@ static len_t _doEventControlChange(smfInfo *smfi, int32_t trackno, off_t beginOf
 	uint8_t ctrlNum = buf[offset];
 	uint8_t value = buf[offset + 1];
 
-	ret = smfCallbackControlChange(channel, ctrlNum, value);
+	smfcb->controlChange(channel, ctrlNum, value);
 	if(ret < 0) {
 		len = -1;
 	}
@@ -91,7 +82,7 @@ static len_t _doEventControlChange(smfInfo *smfi, int32_t trackno, off_t beginOf
 }
 
 
-static len_t _doEventProgramChange(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventProgramChange(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len = 1;
@@ -101,7 +92,7 @@ static len_t _doEventProgramChange(smfInfo *smfi, int32_t trackno, off_t beginOf
 	uint8_t programNum = buf[offset];
 
 
-	ret = smfCallbackProgramChange(channel, programNum);
+	smfcb->programChange(channel, programNum);
 	if(ret < 0) {
 		len = -1;
 	}
@@ -110,7 +101,7 @@ static len_t _doEventProgramChange(smfInfo *smfi, int32_t trackno, off_t beginOf
 }
 
 
-static len_t _doEventChannelPressure(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventChannelPressure(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len = 1;
@@ -120,7 +111,7 @@ static len_t _doEventChannelPressure(smfInfo *smfi, int32_t trackno, off_t begin
 	uint8_t pressureValue = buf[offset];
 
 
-	ret = smfCallbackChannelPressure(channel, pressureValue);
+	smfcb->channelPressure(channel, pressureValue);
 	if(ret < 0) {
 		len = -1;
 	}
@@ -128,7 +119,7 @@ static len_t _doEventChannelPressure(smfInfo *smfi, int32_t trackno, off_t begin
 }
 
 
-static len_t _doEventPitchBend(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventPitchBend(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len = 2;
@@ -137,7 +128,7 @@ static len_t _doEventPitchBend(smfInfo *smfi, int32_t trackno, off_t beginOffset
 	uint8_t channel = statusByte & 0x0f;
 	int32_t bendValue = (int32_t)smfLibGetSmfFixedLe7(buf, offset, 2) - 0x4000;
 
-	ret = smfCallbackPitchBend(channel, bendValue);
+	smfcb->pitchBend(channel, bendValue);
 	if(ret < 0) {
 		len = -1;
 	}
@@ -146,7 +137,7 @@ static len_t _doEventPitchBend(smfInfo *smfi, int32_t trackno, off_t beginOffset
 }
 
 
-static len_t _doEventSysEx(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventSysEx(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	int32_t ret;
@@ -157,7 +148,7 @@ static len_t _doEventSysEx(smfInfo *smfi, int32_t trackno, off_t beginOffset, ui
 	if(len < 0) goto ERR;
 
 	offset += len;
-	ret = smfCallbackSysEx(buf, offset, sysExLen, sysExType);
+	smfcb->sysEx(buf, offset, sysExLen, sysExType);
 	if(ret < 0) goto ERR;
 
 	return len + sysExLen;
@@ -166,7 +157,7 @@ ERR:
 	return -1;
 }
 
-static int32_t _switchMetaEvent(smfInfo *smfi, int32_t trackno, off_t beginOff, len_t metaEventLen, uint8_t metaEventType)
+static int32_t _switchMetaEvent(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOff, len_t metaEventLen, uint8_t metaEventType)
 {
 	const uint8_t *buf = smfi->smfDataBuf;
 	int32_t ret;
@@ -175,79 +166,79 @@ static int32_t _switchMetaEvent(smfInfo *smfi, int32_t trackno, off_t beginOff, 
 	switch((enumMetaEventType)metaEventType) {
 	case metaEventTypeSequenceNumber:
 		smfDbgPrintLog(SMFLOG_INFO, "SequenceNumber ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeText:
 		smfDbgPrintLog(SMFLOG_INFO, "Text ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeTitle:
 		smfDbgPrintLog(SMFLOG_INFO, "Title ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeInstrument:
 		smfDbgPrintLog(SMFLOG_INFO, "Inst ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeProgramName:
 		smfDbgPrintLog(SMFLOG_INFO, "ProgName ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeDevice:
 		smfDbgPrintLog(SMFLOG_INFO, "Device ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeChannelPrefix:
 		smfDbgPrintLog(SMFLOG_INFO, "ChPref. ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypePort:
 		smfDbgPrintLog(SMFLOG_INFO, "Port ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeTrackEnd:
 		smfDbgPrintLog(SMFLOG_INFO, "TrackEnd ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeTempo:
 		smfi->smfTempo = smfLibGetSmfFixedBe8(buf, beginOff, metaEventLen);
-		ret = smfCallbackMetaEventTempo(smfi->smfTempo);
+		smfcb->metaEventTempo(smfi->smfTempo);
 		break;
 
 	case metaEventTypeSmpteOffset:
 		smfDbgPrintLog(SMFLOG_INFO, "SMPTE ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeRhythm:
 		smfDbgPrintLog(SMFLOG_INFO, "Rhythm ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	case metaEventTypeKeySign:
 		smfDbgPrintLog(SMFLOG_INFO, "KeySign ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 
 	default:
 		smfDbgPrintLog(SMFLOG_INFO, "?? ");
-		ret = smfCallbackMetaEvent(buf, beginOff, metaEventLen, metaEventType);
+		smfcb->metaEvent(buf, beginOff, metaEventLen, metaEventType);
 		break;
 	}
 
 	return ret;
 }
 
-static len_t _doEventMetaEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
+static len_t _doEventMetaEvent(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t statusByte) {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	int32_t ret;
@@ -260,7 +251,7 @@ static len_t _doEventMetaEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset
 	if(len < 0) goto ERR;
 
 	offset += len;
-	ret = _switchMetaEvent(smfi, trackno, offset, metaEventLen, metaEventType);
+	ret = _switchMetaEvent(smfi, smfcb, trackno, offset, metaEventLen, metaEventType);
 	if(ret < 0) goto ERR;
 
 	return len + 1 + metaEventLen;
@@ -271,7 +262,7 @@ ERR:
 }
 
 
-static len_t _doEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t *prevStatusByte)
+static len_t _doEvent(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t *prevStatusByte)
 {
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
@@ -289,23 +280,23 @@ static len_t _doEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t
 		smfDbgPrintLog(SMFLOG_ERR, "previous StatusByte 0x%02x is Invalid.\n", statusByte);
 		goto ERR;
 	} else if (statusByte <= 0x8f) {
-		len2 = _doEventNoteOff(smfi, trackno, offset, statusByte);
+		len2 = _doEventNoteOff(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte <= 0x9f) {
-		len2 = _doEventNoteOn(smfi, trackno, offset, statusByte);
+		len2 = _doEventNoteOn(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte <= 0xaf) {
-		len2 = _doEventPolyKeyPressure(smfi, trackno, offset, statusByte);
+		len2 = _doEventPolyKeyPressure(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte <= 0xbf) {
-		len2 = _doEventControlChange(smfi, trackno, offset, statusByte);
+		len2 = _doEventControlChange(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte <= 0xcf) {
-		len2 = _doEventProgramChange(smfi, trackno, offset, statusByte);
+		len2 = _doEventProgramChange(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte <= 0xdf) {
-		len2 = _doEventChannelPressure(smfi, trackno, offset, statusByte);
+		len2 = _doEventChannelPressure(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte <= 0xef) {
-		len2 = _doEventPitchBend(smfi, trackno, offset, statusByte);
+		len2 = _doEventPitchBend(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte == 0xf0 || statusByte == 0xf7) {
-		len2 = _doEventSysEx(smfi, trackno, offset, statusByte);
+		len2 = _doEventSysEx(smfi, smfcb, trackno, offset, statusByte);
 	} else if (statusByte == 0xff) {
-		len2 = _doEventMetaEvent(smfi, trackno, offset, statusByte);
+		len2 = _doEventMetaEvent(smfi, smfcb, trackno, offset, statusByte);
 	} else {
 		smfDbgPrintLog(SMFLOG_ERR, "StatusByte 0x%02x is Invalid.\n", statusByte);
 		goto ERR;
@@ -318,17 +309,18 @@ ERR:
 	return -1;
 }
 
-len_t smfMidiEventParseOneEvent(smfInfo *smfi, int32_t trackno, off_t beginOffset, uint8_t *prevStatusByte){
+static len_t _smfMidiEventParseOneEvent(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, off_t beginOffset, uint8_t *prevStatusByte){
 
 	const uint8_t *buf = smfi->smfDataBuf;
 	off_t offset = beginOffset;
 	len_t len1, len2;
 
+	// Midi Event の長さを得る
 	len1 = smfLibGetSmfVar(buf, offset, NULL);
 	if(len1 < 0) goto ERR;
 
 	offset += len1;
-	len2 = _doEvent(smfi, trackno, offset, prevStatusByte);
+	len2 = _doEvent(smfi, smfcb, trackno, offset, prevStatusByte);
 	if(len2 < 0) goto ERR;
 
 	return len1 + len2;		/* deltaTimeLen + MidiEventLen */
@@ -341,7 +333,7 @@ ERR:
 }
 
 
-int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t time)
+int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, timebase_t time)
 {
 	const uint8_t *buf = smfi->smfDataBuf;
 	smfTrackInfo *tracki = &(smfi->tracki[trackno]);
@@ -362,7 +354,7 @@ int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t ti
 				nextEventTime,
 				offset,
 				trackno);
-		len = smfMidiEventParseOneEvent(smfi, trackno, offset, &prevStateByte);
+		len = _smfMidiEventParseOneEvent(smfi, smfcb, trackno, offset, &prevStateByte);
 		if(len < 0) goto ERR;
 
 
@@ -383,11 +375,11 @@ ERR:
 	return -1;
 }
 
-int32_t smfMidiEventTimerTick(smfInfo *smfi, timebase_t time)
+int32_t smfMidiEventTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, timebase_t time)
 {
 	int32_t endTracks = 0;
 	for(int32_t i=0; i<smfi->smfNrTracks; i++) {
-		int32_t ret = smfMidiEventTrackTimerTick(smfi, i, time);
+		int32_t ret = smfMidiEventTrackTimerTick(smfi, smfcb, i, time);
 		if(ret < 0) return -1;
 		endTracks += ret;
 	}

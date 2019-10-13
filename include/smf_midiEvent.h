@@ -32,7 +32,7 @@ typedef enum metaEventType {
 
 
 
-extern int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, int32_t trackno, timebase_t time);
-extern int32_t smfMidiEventTimerTick(smfInfo *smfi, timebase_t time);
+extern int32_t smfMidiEventTrackTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, int32_t trackno, timebase_t time);
+extern int32_t smfMidiEventTimerTick(smfInfo *smfi, const smf_callback_t *smfcb, timebase_t time);
 
 #endif /* SMF_MIDIEVENT_H_ */
